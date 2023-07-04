@@ -157,15 +157,15 @@ class Crawler(object):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     c = Crawler()
-    logging.debug(c.get_price_jd('2777811', {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) '
+    logging.debug(c.get_price_jd('100023130207', {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) '
                                                        'AppleWebKit/536.6 (KHTML, like Gecko) '
                                                        'Chrome/20.0.1092.0 Safari/536.6'}))
-    logging.debug(c.get_name_jd('2777811', {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) '
+    logging.debug(c.get_name_jd('100023130207', {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) '
                                                           'AppleWebKit/536.6 (KHTML, like Gecko) '
                                                           'Chrome/20.0.1092.0 Safari/536.6'}))
-    logging.debug(c.get_subtitle_jd('5181380', {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) '
-                                                          'AppleWebKit/536.6 (KHTML, like Gecko) '
-                                                          'Chrome/20.0.1092.0 Safari/536.6'}))
-    logging.debug(c.get_info_huihui('2777811', {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) '
-                                                              'AppleWebKit/536.6 (KHTML, like Gecko) '
-                                                              'Chrome/20.0.1092.0 Safari/536.6'}))
+    # logging.debug(c.get_subtitle_jd('100023130207', {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) '
+    #                                                       'AppleWebKit/536.6 (KHTML, like Gecko) '
+    #                                                       'Chrome/20.0.1092.0 Safari/536.6'}))
+    # logging.debug(c.get_info_huihui('100023130207', {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) '
+    #                                                           'AppleWebKit/536.6 (KHTML, like Gecko) '
+    #                                                           'Chrome/20.0.1092.0 Safari/536.6'}))

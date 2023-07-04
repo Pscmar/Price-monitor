@@ -48,7 +48,7 @@ class Crawler(object):
             retry = 30
             while retry:
                 try:
-                    element = self.chrome.find_element_by_xpath("//*[@class='p-price']/span[2]").text
+                    element = self.chrome.find_element("xpath","//*[@class='p-price']/span[2]").text
                     if element:
                         logging.info("爬取价格数据")
                         logging.info('Found price element: {}'.format(element))
@@ -67,21 +67,21 @@ class Crawler(object):
 
         # 提取商品名称
         try:
-            name = self.chrome.find_element_by_xpath("//*[@class='sku-name']").text
+            name = self.chrome.find_element("xpath","//*[@class='sku-name']").text
             item_info_dict['name'] = name
         except AttributeError as e:
             logging.warning('Crawl name failure: {}'.format(e))
         except NoSuchElementException:
             try:
                 # 加油卡(如200117841739）需要改为提取name
-                name = self.chrome.find_element_by_xpath("//*[@class='name']").text
+                name = self.chrome.find_element("xpath","//*[@class='name']").text
                 item_info_dict['name'] = name
             except NoSuchElementException as e:
                 logging.warning('Crawl name failure: {}'.format(e.msg))
 
         # 提取商品PLUS价格
         try:  # 海外购(32533649560)页面无p-price-plus元素，直接保留为None
-            plus_price = self.chrome.find_element_by_xpath("//*[@class='p-price-plus']").text
+            plus_price = self.chrome.find_element("xpath","//*[@class='p-price-plus']").text
             if plus_price:
                 plus_price_xpath = re.findall(r'-?\d+\.?\d*e?-?\d*?', plus_price)
                 item_info_dict['plus_price'] = plus_price_xpath[0]  # 提取浮点数
@@ -92,21 +92,21 @@ class Crawler(object):
 
         # 提取商品副标题
         try:
-            subtitle = self.chrome.find_element_by_xpath("//*[@id='p-ad']").text
+            subtitle = self.chrome.find_element("xpath","//*[@id='p-ad']").text
             item_info_dict['subtitle'] = subtitle
         except AttributeError as e:
             logging.warning('Crawl subtitle failure: {}'.format(e))
         except NoSuchElementException:
             try:
                 # 加油卡200117841739需要改为提取name-s
-                subtitle = self.chrome.find_element_by_xpath("//*[@class='name-s']").text
+                subtitle = self.chrome.find_element("xpath","//*[@class='name-s']").text
                 item_info_dict['subtitle'] = subtitle
             except NoSuchElementException as e:
                 logging.warning('Crawl subtitle failure: {}'.format(e.msg))
 
         # 提取商品价格
         try:
-            price = self.chrome.find_element_by_xpath("//*[@class='p-price']").text
+            price = self.chrome.find_element("xpath","//*[@class='p-price']").text
             if price:
                 price_xpath = re.findall(r'-?\d+\.?\d*e?-?\d*?', price)
                 if price_xpath:  # 若能提取到值
@@ -166,8 +166,8 @@ if __name__ == '__main__':
     # c = Crawler({'http': '125.105.32.168:7305', 'https': '171.211.32.79:2456'})
 
     # logging.debug(c.get_jd_item('10761604532'))
-    logging.debug(c.get_jd_item('6287165'))
-    logging.debug(c.get_huihui_item('30445355110'))
+    logging.debug(c.get_jd_item('100023130207'))
+    # logging.debug(c.get_huihui_item('30445355110'))
 
     c.close()
 
