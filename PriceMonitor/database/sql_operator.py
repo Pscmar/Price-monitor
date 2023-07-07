@@ -6,9 +6,9 @@ from sqlalchemy.orm import sessionmaker
 
 from CONFIG import MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_PORT, MYSQL_CHARSET, EMAIL_FIRST_ALERT_WAIT_TIME, \
     DISCOUNT_LIMIT
-# from database.model.pm_mail_record import PmMailRecord
+from database.model.pm_mail_record import PmMailRecord
 from database.model.pm_monitor_item import PmMonitorItem
-# from database.model.pm_user import PmUser
+from database.model.pm_user import PmUser
 
 
 class SqlOperator:
