@@ -28,7 +28,7 @@ class PmMonitorItem(Base):
     label = Column(String(128))
     store_name = Column(String(128))
     is_ziying = Column(TINYINT(1), comment='是否自营')
-    is_alert = Column(TINYINT(1), nullable=False, comment='是否已经提醒')
+    # is_alert = Column(TINYINT(1), nullable=False, comment='是否已经提醒')
     gmt_create = Column(DateTime)
     gmt_modified = Column(DateTime)
 
