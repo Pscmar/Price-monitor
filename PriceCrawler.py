@@ -43,6 +43,8 @@ class Crawler(object):
         # set timeout for script
         self.chrome.set_script_timeout(30)
 
+        self.found=False
+
     def close(self):
         self.chrome.quit()
 
@@ -53,23 +55,28 @@ class Crawler(object):
         try:
             self.chrome.get(url)
             logging.info('Crawl: {}'.format(url))
-            # 共20秒
-            retry = 10
+            # 共8秒
+            retry = 5
             while retry:
                 try:
                     element = self.chrome.find_element("xpath","//*[@class='p-price']/span[2]").text
                     if element:
                         logging.info("爬取价格数据")
                         logging.info('Found price element: {}'.format(element))
+                        # global found
+                        self.found = True
                         break
                     else:
                         logging.info("价格元素出现，价格未出现重试2秒")
                         time.sleep(2)
                         retry -= 1
+                        if retry == 1: break
                 except NoSuchElementException:
                     logging.info("价格元素未出现")
+                    self.found = False
                     time.sleep(2)
                     retry -= 1
+                    if retry == 1: break
         except TimeoutException as e:
             logging.warning('Crawl failure: {}'.format(e.msg))
             return item_info_dict
@@ -90,11 +97,16 @@ class Crawler(object):
 
         # 提取商品价格
         try:
-            price = self.chrome.find_element("xpath","//*[@class='p-price']").text
-            if price:
-                price_xpath = re.findall(r'-?\d+\.?\d*e?-?\d*?', price)
-                if price_xpath:  # 若能提取到值
-                    item_info_dict['price'] = price_xpath[0]  # 提取浮点数
+            # global found
+            if self.found:
+                price = self.chrome.find_element("xpath","//*[@class='p-price']").text
+                if price:
+                    price_xpath = re.findall(r'-?\d+\.?\d*e?-?\d*?', price)
+                    if price_xpath:  # 若能提取到值
+                        item_info_dict['price'] = price_xpath[0]  # 提取浮点数
+            # elif self.chrome.find_element("xpath","//*[@class='itemover-tip']").text:
+            else:
+                item_info_dict['price'] ='商品已下架'
         except AttributeError as e:
             logging.warning('Crawl price failure: {}'.format(e.msg))
         except NoSuchElementException as e:
@@ -103,7 +115,7 @@ class Crawler(object):
 
         logging.info('Crawl SUCCESS: {}'.format(item_info_dict))
         return item_info_dict
-
+    
 
 if __name__ == '__main__':
     logging.basicConfig(format="%(asctime)s | %(levelname)s | %(filename)s %(lineno)s | %(message)s",
@@ -132,14 +144,6 @@ if __name__ == '__main__':
                 product_row = row[0].row
                 price = c.get_jd_item(url)['price']
                 current_sheet.cell(row=product_row, column=current_sheet.max_column, value=price)
-
-                # if str(row[0].value) == str(item_id):
-                #     # print(row[0].row)
-                #     product_row = row[0].row
-                #     break
-            
-            # sheet[get_column_letter(sheet.max_column) + str(product_row)] = price
-            # sheet.cell(row=product_row, column=sheet.max_column, value=price)
 
         wb.save(excel_file)
         wb.close()
