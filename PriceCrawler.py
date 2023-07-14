@@ -14,6 +14,10 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font
 
+import mysql.connector
+from sqlalchemy import create_engine
+from CONFIG import MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_PORT, MYSQL_DATABASE, MYSQL_CHARSET
+
 # import schedule
 import datetime
 
@@ -33,10 +37,7 @@ class Crawler(object):
             proxy_address = proxy['https']
             chrome_options.add_argument('--proxy-server=%s' % proxy_address)
             logging.info('Chrome using proxy: %s', proxy['https'])
-        # 设置等待策略为不等待完全加载
-        # chrome_options.add_experimental_option('pageLoadStrategy', 'none')
-        # caps = DesiredCapabilities().CHROME
-        # caps["pageLoadStrategy"] = "none"
+
         self.chrome = webdriver.Chrome(options=chrome_options) #, desired_capabilities=caps
         # jd sometimes load google pic takes much time
         self.chrome.set_page_load_timeout(30)
@@ -149,5 +150,46 @@ if __name__ == '__main__':
         wb.close()
     
     update_prices()
+
+    def update_prices_SQL():
+        # 连接到数据库
+        conn = mysql.connector.connect(
+            host=MYSQL_HOST,
+            port=MYSQL_PORT,
+            user=MYSQL_USER,
+            password=MYSQL_PASSWORD,
+            database=MYSQL_DATABASE
+        )
+        cursor = conn.cursor()
+
+        # 获取表名
+        cursor.execute("SHOW TABLES")
+        tables = cursor.fetchall()
+
+        current_date = 'T' + datetime.date.today().strftime("%Y%m%d")
+
+        for table in tables:
+            table_name = table[0]
+            cursor.execute(f" ALTER TABLE {table_name} ADD {current_date} VARCHAR(255)")
+           
+            # 查询商品名称和在售链接
+            cursor.execute(f"SELECT num, url FROM {table_name}")
+            products = cursor.fetchall()
+
+            for product in products:
+                num = product[0]
+                url = product[1]
+                price = c.get_jd_item(url)['price']  # 从URL中获取价格
+
+                # 更新数据库，将价格数据插入到新字段中
+                update_query = f"UPDATE {table_name} SET {current_date} = '{price}' WHERE num = {num}"
+                cursor.execute(update_query)
+                conn.commit()
+
+        # 关闭数据库连接
+        cursor.close()
+        conn.close()
+
+    # update_prices_SQL()
 
     c.close()
